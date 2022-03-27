@@ -6,6 +6,8 @@
 #include <mutex>
 #include <string>
 #include <utility>
+#include <iterator>
+#include <algorithm>
 
 #include <afina/Storage.h>
 
@@ -45,6 +47,9 @@ public:
     bool Get(const std::string &key, std::string &value) override;
 
 private:
+
+
+
     // LRU cache node
     using lru_node = struct lru_node {
         const std::string key;
@@ -68,11 +73,12 @@ private:
 
     // Index of nodes from list above, allows fast random access to elements by lru_node#key
     std::map<std::reference_wrapper<const std::string>, std::reference_wrapper<lru_node>, std::less<std::string>> _lru_index;
+    bool addNode(const std::string &key, const std::string &value);
+    bool deleteNode(lru_node* node);
+    bool moveToHead(lru_node* node);
+    bool changeNode(std::map<std::reference_wrapper<const std::string>, std::reference_wrapper<lru_node>, std::less<std::string>>::iterator cur_node, const std::string &value);
 
-    void addNode(const std::string &key, const std::string &value);
-    void deleteNode(lru_node* node);
-    void moveToHead(lru_node* node);
-    void changeNode(const std::string &key, const std::string &value);
+
 };
 
 } // namespace Backend
